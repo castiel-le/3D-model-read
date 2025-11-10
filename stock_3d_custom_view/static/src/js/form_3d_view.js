@@ -52,29 +52,16 @@ export class Stock3DFormView extends Component {
 		colorDiv.appendChild(color1);
 		var colorText1 = document.createElement("div");
 		colorText1.classList.add("squareText1");
-		colorText1.innerHTML = "Overload";
+		colorText1.innerHTML = "Available";
 		colorDiv.appendChild(colorText1);
 		var color2 = document.createElement("div");
 		color2.classList.add("square2");
 		colorDiv.appendChild(color2);
 		var colorText2 = document.createElement("div");
 		colorText2.classList.add("squareText2");
-		colorText2.innerHTML = "Almost Full";
+		colorText2.innerHTML = "Empty";
 		colorDiv.appendChild(colorText2);
-		var color3 = document.createElement("div");
-		color3.classList.add("square3");
-		colorDiv.appendChild(color3);
-		var colorText3 = document.createElement("div");
-		colorText3.classList.add("squareText3");
-		colorText3.innerHTML = "Free Space Available";
-		colorDiv.appendChild(colorText3);
-		var color4 = document.createElement("div");
-		color4.classList.add("square4blue");
-		colorDiv.appendChild(color4);
-		var colorText4 = document.createElement("div");
-		colorText4.classList.add("squareText4");
-		colorText4.innerHTML = "No Product/Load";
-		colorDiv.appendChild(colorText4);
+
 
 		start();
 		/**
@@ -137,37 +124,56 @@ export class Stock3DFormView extends Component {
 					 * @await
 					 * @param {integer} loc_code
 					 */
-					await rpc('/3Dstock/data/quantity', {
-						'loc_code': key,
-					}).then(function(quant_data) {
-						loc_quant = quant_data;
-					});
-					//checking the quantity and capacity of the location to determine the color of the location
-					if (localStorage.getItem("location_id") == value[6]) {
-						if (loc_quant[0] > 0) {
-							if (loc_quant[1] > 100) {
-								loc_color = 0xcc0000;
-								loc_opacity = 0.8;
-							} else if (loc_quant[1] > 50) {
-								loc_color = 0xe6b800;
-								loc_opacity = 0.8;
-							} else {
-								loc_color = 0x00802b;
-								loc_opacity = 0.8;
-							}
-						} else {
-							if (loc_quant[1] == -1) {
-								loc_color = 0x00802b;
-								loc_opacity = 0.8;
-							} else {
-								loc_color = 0x0066ff;
-								loc_opacity = 0.8;
-							}
-						}
-					} else {
-						loc_color = 0x8c8c8c;
-						loc_opacity = 0.5;
-					}
+//					await rpc('/3Dstock/data/quantity', {
+//						'loc_code': key,
+//					}).then(function(quant_data) {
+//						loc_quant = quant_data;
+//					});
+//					//checking the quantity and capacity of the location to determine the color of the location
+//					if (localStorage.getItem("location_id") == value[6]) {
+//						if (loc_quant[0] > 0) {
+//							if (loc_quant[1] > 100) {
+//								loc_color = 0xcc0000;
+//								loc_opacity = 0.8;
+//							} else if (loc_quant[1] > 50) {
+//								loc_color = 0xe6b800;
+//								loc_opacity = 0.8;
+//							} else {
+//								loc_color = 0x00802b;
+//								loc_opacity = 0.8;
+//							}
+//						} else {
+//							if (loc_quant[1] == -1) {
+//								loc_color = 0x00802b;
+//								loc_opacity = 0.8;
+//							} else {
+//								loc_color = 0x0066ff;
+//								loc_opacity = 0.8;
+//							}
+//						}
+//					} else {
+//						loc_color = 0x8c8c8c;
+//						loc_opacity = 0.5;
+//					}
+                    const is_empty = value[7];
+
+                    //checking the quantity and capacity of the location to determine the color of the location
+                    if (localStorage.getItem("location_id") == value[6]) {
+                       // This is the location we are focused on
+                       if (is_empty == true) {
+                           // EMPTY (Transparent)
+                           loc_color = 0xffffff; // Color doesn't matter
+                           loc_opacity = 0.0;    // Full transparency
+                       } else {
+                           // AVAILABLE (Green)
+                           loc_color = 0x00ff00; // Green
+                           loc_opacity = 0.8;
+                       }
+                    } else {
+                       // This is any other location in the warehouse
+                       loc_color = 0x8c8c8c;
+                       loc_opacity = 0.5;
+                    }
 					//creating a 3D box geometry for each location
 					material = new THREE.MeshBasicMaterial({
 						color: loc_color,
